@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Получение прогноза погоды</title>
+</head>
+<style>
+    * {
+        font-size: 32px;
+    }
+
+    span {
+        color: red;
+        font-size: 32px;
+    }
+    body {
+            background-image: url('https://kartinki.pics/pics/uploads/posts/2022-08/1659649070_4-kartinkin-net-p-zastavka-prognoz-pogodi-krasivo-5.jpg'); 
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        input {
+            font-size: 20px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        button {
+    font-size: 20px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #weather {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        #img {
+    margin-top: 10px;
+    max-width: 100px;
+    max-height: 100px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+        #sunset,
+        #sunrise,
+        #country,
+        #additionalInfo {
+            margin-top: 10px;
+            font-size: 20px;
+        }
+
+        #additionalInfo {
+            font-weight: bold;
+        }
+        .weather-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    margin: 20px;
+    max-width: 400px;
+}
+
+
+</style>
+
+<body>
+    <div class="weather-card">
+       <h1>Прогноз погоды - <span id=city> </span></h1>
+       <label for="cityInput">Введите город: </label>
+       <input type="text" id="cityInput" placeholder="Одесса">
+       <button onclick="getWeather()">Получить погоду</button>
+
+       <div id="weather"></div>
+       <img id="img" />
+
+       <div id="sunset"></div>
+       <div id="sunrise"></div>
+       <div id="country"></div>
+       <div id="additionalInfo"></div>
+    </div>
+    <script >
+   function getWeather() {
+            // Замените 'YOUR_API_KEY' на ваш собственный API-ключ OpenWeatherMap
+            const apiKey = 'd77e8a80bfcc7551c3135a39d716ce92';
+        
+            // Замените 'CITY_NAME' на название города, для которого вы хотите получить прогноз погоды
+            const cityInput = document.getElementById('cityInput');
+            const city = cityInput.value || 'Odessa'; // Используем введенный город или Одессу по умолчанию
+
+            const weatherElement = document.getElementById('weather');
+            const iconw = document.getElementById('img');
+            const cit = document.getElementById('city');
+
+
+            const country = document.getElementById('country');
+            const additionalInfo = document.getElementById('additionalInfo');
+
+
+            // // Формируем URL для запроса к API OpenWeatherMap
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+        
+            // Отправляем GET-запрос к API
+            fetch(url).then((response) => response.json()).then((data) => {
+        
+                weatherElement.innerHTML = `${city}`;
+                const temperature = data.main.temp;
+              
+                const description = data.weather[0].description;
+                const icn = data.weather[0].icon;
+         
+        
+                const getTime = new Date(data.sys.sunset * 1000); // закат
+
+               const fullTime = `${getTime.getHours()}: ${getTime.getMinutes()}: ${getTime.getSeconds()}`;
+              
+                cit.innerText = data.name;
+                country.innerText = `Страна: ${data.sys.country}`;
+              document.getElementById("sunrise").innerHTML = ` Закат: ${fullTime}`;
+        
+              iconw.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+
+                weatherElement.innerHTML = `Текущая температура: ${temperature}°C<br>Описание: ${description}`;
+
+                      
+           // Дополнительная информация
+                 const humidity = data.main.humidity;
+                const windSpeed = data.wind.speed;
+                const pressure = data.main.pressure;
+
+                additionalInfo.innerHTML = `Влажность: ${humidity}%<br>Ветер: ${windSpeed} м/с<br>Давление: ${pressure} гПа`;
+
+            })
+                .catch((error) => {
+                    console.error('Произошла ошибка:', error);
+                });
+        };
+
+
+
+
+         // Запуск запроса для Одессы при загрузке страницы
+         window.addEventListener('DOMContentLoaded', (event) => {
+            getWeather();
+        }); 
+        </script>
+</body>
+
+</html>
